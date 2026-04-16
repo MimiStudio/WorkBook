@@ -1,0 +1,1660 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#0f172a" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="MyWorkBook" />
+  <meta name="application-name" content="MyWorkBook" />
+  <meta name="msapplication-TileColor" content="#0f172a" />
+  <meta name="msapplication-TileImage" content="icons/icon-192.png" />
+
+  <link rel="icon" type="image/png" sizes="16x16" href="icons/icon-16.png" />
+  <link rel="icon" type="image/png" sizes="32x32" href="icons/icon-32.png" />
+  <link rel="icon" type="image/png" sizes="48x48" href="icons/icon-48.png" />
+  <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png" />
+  <link rel="icon" type="image/png" sizes="512x512" href="icons/icon-512.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon.png" />
+  <link rel="manifest" href="manifest.json" />
+
+  <title>MyWorkBook — Mimi Studio</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet" />
+  
+  <style>
+    * { box-sizing: border-box; }
+    body { -webkit-tap-highlight-color: transparent; font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    input, select, textarea { font-size: 16px !important; }
+    .glass { backdrop-filter: blur(16px); }
+    .chip { transition: all .18s ease; }
+    .chip.active { background: #0f172a; color: white; border-color: #0f172a; }
+    .modal-open { overflow: hidden; }
+    .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .line-clamp-3 { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+    .hide-scrollbar::-webkit-scrollbar { display: none; }
+    .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    .attachment-thumb video, .attachment-thumb img, .attachment-thumb audio { border-radius: 16px; }
+    
+.nav-btn {
+  background: rgba(248,250,252,.92);
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 1px 0 rgba(255,255,255,.7) inset, 0 6px 18px -16px rgba(15,23,42,.35);
+  transition: transform .16s ease, background .16s ease, border-color .16s ease, box-shadow .16s ease;
+}
+.nav-btn:hover { transform: translateY(-1px); }
+.nav-btn.active {
+  background: linear-gradient(180deg, #ffffff 0%, #eff6ff 100%);
+  border-color: #bfdbfe;
+  box-shadow: 0 10px 25px -18px rgba(37,99,235,.55), 0 0 0 1px rgba(191,219,254,.35) inset;
+}
+.nav-btn.active .nav-icon,
+.nav-btn.active .nav-label { color: #2563eb !important; }
+.nav-icon, .nav-label { transition: color .16s ease; }
+.quick-plus-badge {
+  position: absolute;
+  right: -4px;
+  bottom: -4px;
+  width: 16px;
+  height: 16px;
+  border-radius: 999px;
+  background: #7c3aed;
+  color: white;
+  font-size: 11px;
+  font-weight: 800;
+  border: 2px solid white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  padding: 0;
+  transform: translateY(-1px);
+}
+
+.manual-controls-shell {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.manual-controls-header {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.manual-controls-heading {
+  min-width: 0;
+}
+
+.manual-controls-actions {
+  display: flex;
+  justify-content: flex-end;
+  width: 100%;
+}
+
+.manual-controls-filters {
+  width: 100%;
+}
+
+.gestisci-categorie-btn {
+  white-space: nowrap;
+}
+
+.custom-select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: url("data:image/svg+xml;utf8,<svg fill='%23475569' height='18' viewBox='0 0 20 20' width='18' xmlns='http://www.w3.org/2000/svg'><path d='M5.23 7.21a.75.75 0 0 1 1.06.02L10 11.17l3.71-3.94a.75.75 0 1 1 1.08 1.04l-4.25 4.5a.75.75 0 0 1-1.08 0l-4.25-4.5a.75.75 0 0 1 .02-1.06z'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 18px center;
+  background-size: 18px 18px;
+  padding-right: 56px !important;
+}
+
+.custom-select::-ms-expand {
+  display: none;
+}
+
+.media-openable {
+  cursor: zoom-in;
+}
+
+@media (min-width: 1024px) {
+  .manual-controls-header {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .manual-controls-heading {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  .manual-controls-actions {
+    width: auto;
+    flex: 0 0 auto;
+    justify-content: flex-end;
+  }
+
+  .manual-controls-filters {
+    display: grid;
+    grid-template-columns: minmax(320px, 1.15fr) minmax(240px, 0.8fr) minmax(240px, 0.8fr);
+    gap: 16px;
+    width: 100%;
+    align-items: center;
+  }
+}
+  </style>
+</head>
+<body class="bg-slate-100 text-slate-800 pb-32">
+  <div id="toast" class="fixed top-4 left-1/2 -translate-x-1/2 z-[100] hidden px-4 py-2 rounded-full shadow-xl text-sm font-semibold text-white bg-emerald-500"></div>
+
+  <header class="sticky top-0 z-40 bg-slate-950/95 text-white border-b border-slate-800 glass">
+    <div class="max-w-7xl mx-auto px-4 py-4">
+      <div class="flex items-center justify-between gap-3">
+        <div>
+          <div class="flex items-center gap-2">
+            <div class="w-11 h-11 rounded-2xl bg-blue-500/15 border border-blue-400/20 flex items-center justify-center text-blue-300 text-lg shadow-inner">
+              <i class="fa-solid fa-book-open-reader"></i>
+            </div>
+            <div>
+              <h1 class="text-xl font-bold tracking-tight">MyWorkBook</h1>
+              <p class="text-xs text-slate-400">Manuale operativo personale, visuale e multimediale</p>
+            </div>
+          </div>
+        </div>
+        <button onclick="openEntryModal()" class="shrink-0 px-4 py-3 rounded-2xl bg-blue-500 hover:bg-blue-400 active:scale-[.98] transition font-semibold shadow-lg shadow-blue-500/25 text-sm">
+          <i class="fa-solid fa-plus mr-2"></i>Nuova scheda
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto px-4 pt-5 space-y-5">
+    <section id="homeStats" class="grid grid-cols-2 lg:grid-cols-4 gap-3">
+      <div class="bg-white rounded-3xl p-4 shadow-sm border border-slate-200">
+        <div class="text-xs uppercase tracking-wider text-slate-400 font-bold">📚 Schede</div>
+        <div id="statEntries" class="mt-2 text-3xl font-bold text-slate-900">0</div>
+        <div class="text-sm text-slate-500 mt-1">contenuti salvati</div>
+      </div>
+      <div class="bg-white rounded-3xl p-4 shadow-sm border border-slate-200">
+        <div class="text-xs uppercase tracking-wider text-slate-400 font-bold">🖼️ Allegati</div>
+        <div id="statMedia" class="mt-2 text-3xl font-bold text-slate-900">0</div>
+        <div class="text-sm text-slate-500 mt-1">foto, video, audio e file</div>
+      </div>
+      <div class="bg-white rounded-3xl p-4 shadow-sm border border-slate-200">
+        <div class="text-xs uppercase tracking-wider text-slate-400 font-bold">✅ Checklist</div>
+        <div id="statChecklist" class="mt-2 text-3xl font-bold text-slate-900">0</div>
+        <div class="text-sm text-slate-500 mt-1">punti operativi totali</div>
+      </div>
+      <div class="bg-white rounded-3xl p-4 shadow-sm border border-slate-200">
+        <div class="text-xs uppercase tracking-wider text-slate-400 font-bold">🕒 Ultimo aggiornamento</div>
+        <div id="statUpdated" class="mt-2 text-lg font-bold text-slate-900">—</div>
+        <div class="text-sm text-slate-500 mt-1">ultima modifica registrata</div>
+      </div>
+    </section>
+
+    <section id="searchTools" class="hidden bg-white rounded-[28px] p-4 shadow-sm border border-slate-200">
+      <div class="flex flex-col lg:flex-row gap-3 lg:items-center lg:justify-between">
+        <div class="flex-1 grid md:grid-cols-[1.2fr_.8fr_.8fr] gap-3">
+          <div class="relative">
+            <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-slate-300"></i>
+            <input id="searchInput" oninput="render()" placeholder="Cerca per titolo, uso, tag o note..." class="w-full pl-11 pr-4 py-3 rounded-2xl border border-slate-200 bg-slate-50 focus:outline-none focus:ring-4 focus:ring-blue-100 focus:border-blue-400" />
+          </div>
+          <select id="categoryFilter" onchange="render()" class="custom-select w-full px-4 py-3 rounded-2xl border border-slate-200 bg-slate-50 focus:outline-none focus:ring-4 focus:ring-blue-100 focus:border-blue-400">
+            <option value="all">📂 Tutte le categorie</option>
+          </select>
+          <select id="priorityFilter" onchange="render()" class="custom-select w-full px-4 py-3 rounded-2xl border border-slate-200 bg-slate-50 focus:outline-none focus:ring-4 focus:ring-blue-100 focus:border-blue-400">
+            <option value="all">🚦 Tutte le priorità</option>
+            <option value="alta">🔴 Alta</option>
+            <option value="media">🟠 Media</option>
+            <option value="bassa">🟢 Bassa</option>
+          </select>
+        </div>
+      </div>
+      <div class="mt-4 flex gap-2 overflow-auto hide-scrollbar" id="tagBar"></div>
+    </section>
+
+    <section id="manualControls" class="hidden bg-white rounded-[28px] p-4 shadow-sm border border-slate-200">
+      <div class="manual-controls-shell">
+        <div class="manual-controls-header">
+          <div class="manual-controls-heading">
+            <h2 class="text-lg font-bold text-slate-900">📘 Fascicolo</h2>
+            <p class="text-sm text-slate-500">Book completo di tutte le schede salvate, con filtri e ordinamento dedicati.</p>
+          </div>
+          <div class="manual-controls-actions">
+            <button type="button" onclick="openCategoryManager()" class="gestisci-categorie-btn shrink-0 inline-flex items-center gap-2 px-4 py-3 rounded-2xl border border-slate-200 bg-slate-50 text-sm font-semibold text-slate-700 hover:bg-slate-100">
+              <i class="fa-solid fa-layer-group text-blue-500"></i>
+              Gestisci categorie
+            </button>
+          </div>
+        </div>
+        <div class="manual-controls-filters">
+          <div class="relative">
+            <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-slate-300"></i>
+            <input id="manualKeyword" oninput="render()" placeholder="Filtra il fascicolo per parola chiave..." class="w-full pl-11 pr-4 py-3 rounded-2xl border border-slate-200 bg-slate-50 focus:outline-none focus:ring-4 focus:ring-blue-100 focus:border-blue-400" />
+          </div>
+          <select id="manualCategory" onchange="render()" class="custom-select w-full px-4 py-3 rounded-2xl border border-slate-200 bg-slate-50 focus:outline-none focus:ring-4 focus:ring-blue-100 focus:border-blue-400">
+            <option value="all">📂 Tutte le categorie</option>
+          </select>
+          <select id="manualSort" onchange="render()" class="custom-select w-full px-4 py-3 rounded-2xl border border-slate-200 bg-slate-50 focus:outline-none focus:ring-4 focus:ring-blue-100 focus:border-blue-400">
+            <option value="updated">🕒 Ultima modifica</option>
+            <option value="created">🆕 Più recenti</option>
+            <option value="az">🔤 Alfabetico A-Z</option>
+            <option value="za">🔠 Alfabetico Z-A</option>
+            <option value="priority">🚦 Priorità</option>
+          </select>
+        </div>
+      </div>
+    </section>
+
+    <section id="emptyState" class="hidden bg-white rounded-[28px] border border-dashed border-slate-300 p-10 text-center shadow-sm">
+      <div class="w-16 h-16 rounded-full bg-slate-100 mx-auto flex items-center justify-center text-slate-400 text-2xl">
+        <i class="fa-solid fa-book-bookmark"></i>
+      </div>
+      <h2 class="mt-4 text-xl font-bold text-slate-900">Inizia il tuo fascicolo operativo</h2>
+      <p class="mt-2 text-slate-500 max-w-xl mx-auto">Crea una scheda per uno strumento, una procedura, una regola di sicurezza o una situazione ricorrente. Ogni scheda può includere testo, checklist, foto, video, audio e allegati.</p>
+      <button onclick="openEntryModal()" class="mt-5 inline-flex items-center px-5 py-3 rounded-2xl bg-slate-900 text-white font-semibold">
+        <i class="fa-solid fa-plus mr-2"></i>Crea la prima scheda
+      </button>
+    </section>
+
+    <section id="homeFeed" class="space-y-4">
+      <div class="bg-white rounded-[28px] p-4 shadow-sm border border-slate-200">
+        <div class="flex items-center justify-between gap-3 mb-3">
+          <div>
+            <h2 class="text-lg font-bold text-slate-900">✨ Ultime schede aggiornate</h2>
+            <p class="text-sm text-slate-500">Anteprima rapida dei contenuti aggiunti o modificati più di recente.</p>
+          </div>
+          <button onclick="focusSearch()" class="px-4 py-2 rounded-2xl border border-slate-200 text-sm font-semibold text-slate-700 bg-slate-50">Apri ricerca</button>
+        </div>
+        <div id="recentEntries" class="grid xl:grid-cols-3 md:grid-cols-2 gap-4"></div>
+      </div>
+    </section>
+    <section id="cardsView" class="hidden grid xl:grid-cols-3 md:grid-cols-2 gap-4"></section>
+    <section id="manualView" class="hidden space-y-4"></section>
+  </main>
+
+  <div class="fixed bottom-0 left-0 right-0 z-40 bg-white/95 glass border-t border-slate-200 shadow-[0_-8px_24px_-12px_rgba(15,23,42,.16)]">
+    
+    <div class="max-w-7xl mx-auto px-3 py-2 grid grid-cols-5 gap-2">
+      <button id="navHome" onclick="goHome()" class="nav-btn flex flex-col items-center justify-center py-2 rounded-2xl active:bg-slate-100">
+        <i class="nav-icon fa-solid fa-house text-lg text-sky-500"></i><span class="nav-label text-[11px] font-semibold mt-1 text-sky-600">Home</span>
+      </button>
+      <button id="navSearch" onclick="focusSearch()" class="nav-btn flex flex-col items-center justify-center py-2 rounded-2xl active:bg-slate-100">
+        <i class="nav-icon fa-solid fa-magnifying-glass text-lg text-amber-500"></i><span class="nav-label text-[11px] font-semibold mt-1 text-amber-600">Schede</span>
+      </button>
+      <button id="navQuick" onclick="openQuickCapture()" class="nav-btn flex flex-col items-center justify-center py-2 rounded-2xl active:bg-slate-100">
+        <span class="relative inline-flex">
+          <i class="nav-icon fa-solid fa-note-sticky text-lg text-violet-500"></i>
+          <span class="quick-plus-badge">+</span>
+        </span>
+        <span class="nav-label text-[11px] font-semibold mt-1 text-violet-600">Nota rapida</span>
+      </button>
+      <button id="navManual" onclick="openManualView()" class="nav-btn flex flex-col items-center justify-center py-2 rounded-2xl active:bg-slate-100">
+        <i class="nav-icon fa-solid fa-book-bookmark text-lg text-emerald-500"></i><span class="nav-label text-[11px] font-semibold mt-1 text-emerald-600">Fascicolo</span>
+      </button>
+      <button id="navSave" onclick="openSaveModal()" class="nav-btn flex flex-col items-center justify-center py-2 rounded-2xl active:bg-slate-100">
+        <i class="nav-icon fas fa-save text-lg text-rose-500"></i><span class="nav-label text-[11px] font-semibold mt-1 text-rose-600">Salvataggio</span>
+      </button>
+    </div>
+    <div class="text-center pb-4 pt-1 text-[11px] uppercase tracking-[0.25em] text-slate-300 font-bold">© Mimi Studio</div>
+
+  </div>
+
+  <div id="saveModal" class="fixed inset-0 z-[100] hidden items-end sm:items-center justify-center">
+    <div class="absolute inset-0 bg-slate-950/60 backdrop-blur-sm" onclick="closeSaveModal()"></div>
+    <div class="relative z-10 w-full sm:w-[390px] bg-white rounded-t-[28px] sm:rounded-[28px] p-5 shadow-2xl max-h-[90vh] overflow-auto">
+      <div class="flex items-center justify-between mb-4">
+        <div>
+          <h3 class="text-xl font-bold text-slate-900">Salvataggio ed esportazione</h3>
+          <p class="text-sm text-slate-500">Backup completo e fascicolo pronto per la stampa.</p>
+        </div>
+        <button onclick="closeSaveModal()" class="w-10 h-10 rounded-full border border-slate-200 text-slate-500"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="space-y-3">
+        <button onclick="exportPdfManual()" class="w-full flex items-center gap-3 p-4 bg-slate-50 border border-slate-200 rounded-2xl active:bg-red-50">
+          <div class="w-11 h-11 rounded-full bg-red-100 text-red-600 flex items-center justify-center"><i class="fa-solid fa-file-pdf"></i></div>
+          <div class="text-left"><div class="font-bold text-sm text-slate-700">Esporta fascicolo PDF</div><div class="text-[11px] text-slate-400">Mantiene la struttura delle schede, incluse le immagini</div></div>
+        </button>
+        <button onclick="downloadBackup()" class="w-full flex items-center gap-3 p-4 bg-slate-50 border border-slate-200 rounded-2xl active:bg-blue-50">
+          <div class="w-11 h-11 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center"><i class="fas fa-save"></i></div>
+          <div class="text-left"><div class="font-bold text-sm text-slate-700">Scarica backup JSON</div><div class="text-[11px] text-slate-400">Formato migliore per ripristinare tutti i dati senza alterazioni</div></div>
+        </button>
+        <label class="w-full flex items-center gap-3 p-4 bg-slate-700 border border-slate-600 rounded-2xl active:bg-slate-600 text-white cursor-pointer">
+          <div class="w-11 h-11 rounded-full bg-slate-600 flex items-center justify-center"><i class="fas fa-cloud-upload-alt"></i></div>
+          <div class="text-left"><div class="font-bold text-sm">Importa backup JSON</div><div class="text-[11px] text-slate-300">Ripristina schede, checklist, tag e allegati</div></div>
+          <input type="file" accept="application/json" class="hidden" onchange="importBackup(this)" />
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <div id="categoryModal" class="fixed inset-0 z-[110] hidden items-end sm:items-center justify-center">
+    <div class="absolute inset-0 bg-slate-950/60 backdrop-blur-sm" onclick="closeCategoryManager()"></div>
+    <div class="relative z-10 w-full sm:w-[560px] bg-white rounded-t-[28px] sm:rounded-[28px] p-5 shadow-2xl max-h-[90vh] overflow-auto">
+      <div class="flex items-center justify-between gap-3 mb-4">
+        <div>
+          <h3 class="text-xl font-bold text-slate-900">Categorie e icone</h3>
+          <p class="text-sm text-slate-500">Puoi rinominare le categorie esistenti e cambiare l’emoji associata.</p>
+        </div>
+        <button type="button" onclick="closeCategoryManager()" class="w-10 h-10 rounded-full border border-slate-200 text-slate-500"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div id="categoryManagerList" class="space-y-3"></div>
+      <div class="mt-4 flex flex-col sm:flex-row gap-3 justify-end">
+        <button type="button" onclick="addCategoryRow()" class="px-4 py-3 rounded-2xl border border-slate-200 font-semibold text-slate-700">+ Nuova categoria</button>
+        <button type="button" onclick="saveCategoryManager()" class="px-5 py-3 rounded-2xl bg-blue-500 text-white font-semibold shadow-lg shadow-blue-500/20">Salva categorie</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="entryModal" class="hidden fixed inset-0 z-50">
+    <div class="absolute inset-0 bg-slate-950/65" onclick="closeEntryModal()"></div>
+    <div class="absolute inset-x-0 bottom-0 lg:inset-8 lg:max-w-5xl lg:mx-auto bg-white rounded-t-[30px] lg:rounded-[30px] shadow-2xl max-h-[92vh] overflow-auto">
+      <div class="sticky top-0 bg-white/95 glass border-b border-slate-200 px-5 py-4 flex items-center justify-between rounded-t-[30px]">
+        <div>
+          <h2 id="modalTitle" class="text-xl font-bold text-slate-900">Nuova scheda</h2>
+          <p class="text-sm text-slate-500">📎 Foto, video, audio, file, note e checklist in un’unica scheda</p>
+        </div>
+        <button onclick="closeEntryModal()" class="w-11 h-11 rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <div class="p-5 grid lg:grid-cols-2 gap-5">
+        <div class="space-y-4">
+          <div>
+            <label class="text-sm font-bold text-slate-700">📝 Titolo</label>
+            <input id="entryTitle" class="mt-2 w-full px-4 py-3 rounded-2xl border border-slate-200 bg-slate-50 focus:outline-none focus:ring-4 focus:ring-blue-100 focus:border-blue-400" placeholder="Es. Trapano a colonna / Procedura apertura impianto" />
+          </div>
+
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <div class="flex items-center justify-between gap-3">
+                <label class="text-sm font-bold text-slate-700">📂 Categoria</label>
+                <button type="button" onclick="openCategoryManager()" class="text-xs font-semibold text-blue-600 hover:text-blue-700">Gestisci categorie</button>
+              </div>
+              <input id="entryCategory" list="categoryOptions" class="mt-2 w-full px-4 py-3 rounded-2xl border border-slate-200 bg-slate-50 focus:outline-none focus:ring-4 focus:ring-blue-100 focus:border-blue-400" placeholder="Es. Strumenti" />
+              <datalist id="categoryOptions"></datalist>
+            </div>
+            <div>
+              <label class="text-sm font-bold text-slate-700">🚦 Priorità</label>
+              <select id="entryPriority" class="custom-select mt-2 w-full px-4 py-3 rounded-2xl border border-slate-200 bg-slate-50 focus:outline-none focus:ring-4 focus:ring-blue-100 focus:border-blue-400">
+                <option value="alta">🔴 Alta</option>
+                <option value="media" selected>🟠 Media</option>
+                <option value="bassa">🟢 Bassa</option>
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <label class="text-sm font-bold text-slate-700">🏷️ Tag</label>
+            <input id="entryTags" class="mt-2 w-full px-4 py-3 rounded-2xl border border-slate-200 bg-slate-50 focus:outline-none focus:ring-4 focus:ring-blue-100 focus:border-blue-400" placeholder="Es. trapano, metallo, sicurezza, turno A" />
+            <p class="mt-1 text-xs text-slate-400">Separa i tag con virgole.</p>
+          </div>
+
+          <div>
+            <label class="text-sm font-bold text-slate-700">🖼️ Descrizione / uso</label>
+            <textarea id="entryPurpose" rows="4" class="mt-2 w-full px-4 py-3 rounded-2xl border border-slate-200 bg-slate-50 focus:outline-none focus:ring-4 focus:ring-blue-100 focus:border-blue-400" placeholder="A cosa serve, quando si usa, attenzione principali..."></textarea>
+          </div>
+
+          <div>
+            <label class="text-sm font-bold text-slate-700">📎 Note operative</label>
+            <textarea id="entryNotes" rows="4" class="mt-2 w-full px-4 py-3 rounded-2xl border border-slate-200 bg-slate-50 focus:outline-none focus:ring-4 focus:ring-blue-100 focus:border-blue-400" placeholder="Indicazioni extra, consigli pratici, varianti, responsabile di riferimento..."></textarea>
+          </div>
+        </div>
+
+        <div class="space-y-4">
+          <div class="bg-slate-50 rounded-[26px] p-4 border border-slate-200">
+            <div class="flex items-center justify-between gap-3">
+              <div>
+                <h3 class="font-bold text-slate-900">✅ Checklist operativa</h3>
+                <p class="text-sm text-slate-500">Aggiungi passaggi da ricordare prima, durante o dopo il lavoro.</p>
+              </div>
+              <button onclick="addChecklistItem()" class="px-3 py-2 rounded-xl bg-slate-900 text-white text-sm font-semibold"><i class="fa-solid fa-plus mr-1"></i>Aggiungi</button>
+            </div>
+            <div id="checklistBuilder" class="mt-4 space-y-2"></div>
+          </div>
+
+          <div class="bg-slate-50 rounded-[26px] p-4 border border-slate-200">
+            <h3 class="font-bold text-slate-900">🎙️ Acquisizione rapida e allegati</h3>
+            <p class="text-sm text-slate-500 mt-1">Puoi caricare foto, video, audio o altri file utili alla scheda.</p>
+            <label class="mt-4 flex items-center justify-center gap-3 px-4 py-4 rounded-2xl border-2 border-dashed border-slate-300 bg-white text-slate-600 cursor-pointer hover:border-blue-400 hover:text-blue-600 transition">
+              <i class="fa-solid fa-paperclip"></i>
+              <span class="font-semibold text-sm">Seleziona allegati multimediali</span>
+              <input id="entryFiles" type="file" multiple class="hidden" accept="image/*,video/*,audio/*,.pdf,.doc,.docx,.xls,.xlsx,.txt" onchange="handleFiles(this.files)" />
+            </label>
+            <div id="attachmentPreview" class="mt-4 grid grid-cols-2 gap-3"></div>
+          </div>
+
+          <div class="bg-blue-50 rounded-[26px] p-4 border border-blue-100">
+            <h3 class="font-bold text-slate-900">✨ Suggerimenti intelligenti inclusi in questa v1</h3>
+            <div class="mt-3 space-y-2 text-sm text-slate-600">
+              <div>📌 salvataggio locale automatico</div>
+              <div>🔎 ricerca istantanea per testo, categoria, tag e priorità</div>
+              <div>📘 vista fascicolo ordinata per argomenti</div>
+              <div>🗃️ backup / importazione JSON</div>
+              <div>🖨️ esportazione del fascicolo in stampa/PDF tramite browser</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="sticky bottom-0 bg-white/95 glass border-t border-slate-200 px-5 py-4 flex flex-col sm:flex-row gap-3 justify-end rounded-b-[30px]">
+        <button id="deleteEntryBtn" onclick="deleteCurrentEntry()" class="hidden px-4 py-3 rounded-2xl border border-rose-200 font-semibold text-rose-600 bg-rose-50">Elimina scheda</button>
+        <button onclick="closeEntryModal()" class="px-4 py-3 rounded-2xl border border-slate-200 font-semibold text-slate-700">Annulla</button>
+        <button onclick="saveEntry()" class="px-5 py-3 rounded-2xl bg-blue-500 text-white font-semibold shadow-lg shadow-blue-500/20">💾 Salva scheda</button>
+      </div>
+    </div>
+  </div>
+
+
+  <div id="mediaLightbox" class="fixed inset-0 z-[120] hidden items-center justify-center p-4">
+    <div class="absolute inset-0 bg-slate-950/85 backdrop-blur-sm" onclick="closeMediaLightbox()"></div>
+    <div class="relative z-10 max-w-6xl w-full flex items-center justify-center">
+      <button type="button" onclick="closeMediaLightbox()" class="absolute -top-3 right-0 sm:right-2 w-11 h-11 rounded-full bg-white/90 text-slate-700 shadow-lg">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+      <img id="mediaLightboxImage" src="" alt="Anteprima allegato" class="max-h-[85vh] max-w-full rounded-[24px] shadow-2xl border border-white/10 hidden" />
+    </div>
+  </div>
+
+  <script>
+    const STORAGE_KEY = 'myWorkbookDataV4lite';
+    const UI_KEY = 'myWorkbookUiV4lite';
+    const defaultCategoryIcons = {
+      'Strumenti':'🛠️',
+      'Procedure':'📋',
+      'Sicurezza':'🦺',
+      'Problemi frequenti':'⚠️',
+      'Manutenzione':'🔧',
+      'Materiali':'📦',
+      'Clienti / casi':'👥',
+      'Regole interne':'📌'
+    };
+
+    const defaultState = {
+      entries: [],
+      categories: ['Strumenti', 'Procedure', 'Sicurezza', 'Problemi frequenti', 'Manutenzione', 'Materiali', 'Clienti / casi', 'Regole interne'],
+      categoryIcons: { ...defaultCategoryIcons }
+    };
+
+    let state = JSON.parse(localStorage.getItem(STORAGE_KEY)) || structuredClone(defaultState);
+    state.categories = Array.isArray(state.categories) ? state.categories : [...defaultState.categories];
+    state.categoryIcons = { ...defaultCategoryIcons, ...(state.categoryIcons || {}) };
+    let ui = JSON.parse(localStorage.getItem(UI_KEY)) || { view: 'cards', activeTag: 'all', activeNav: 'home' };
+    let draftAttachments = [];
+    let editingId = null;
+
+    function persist() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      localStorage.setItem(UI_KEY, JSON.stringify(ui));
+    }
+
+    function showToast(msg, ok = true) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.className = `fixed top-4 left-1/2 -translate-x-1/2 z-[100] px-4 py-2 rounded-full shadow-xl text-sm font-semibold text-white ${ok ? 'bg-emerald-500' : 'bg-rose-500'}`;
+      t.classList.remove('hidden');
+      clearTimeout(showToast._timer);
+      showToast._timer = setTimeout(() => t.classList.add('hidden'), 1800);
+    }
+
+    function escapeHtml(str='') {
+      return str.replace(/[&<>'"]/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[ch]));
+    }
+
+    function formatDate(ts) {
+      if (!ts) return '—';
+      return new Date(ts).toLocaleString('it-IT', { day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit' });
+    }
+
+    function priorityMeta(value) {
+      if (value === 'alta') return { label: '🔴 Alta', cls: 'bg-rose-50 text-rose-700 border-rose-200' };
+      if (value === 'bassa') return { label: '🟢 Bassa', cls: 'bg-emerald-50 text-emerald-700 border-emerald-200' };
+      return { label: '🟠 Media', cls: 'bg-amber-50 text-amber-700 border-amber-200' };
+    }
+
+    function categoryEmoji(cat) {
+      return state.categoryIcons?.[cat] || defaultCategoryIcons[cat] || '📁';
+    }
+
+    function attachmentIcon(type='') {
+      if (type.startsWith('image/')) return 'fa-image';
+      if (type.startsWith('video/')) return 'fa-video';
+      if (type.startsWith('audio/')) return 'fa-microphone-lines';
+      if (type.includes('pdf')) return 'fa-file-pdf';
+      if (type.includes('sheet') || type.includes('excel')) return 'fa-file-excel';
+      if (type.includes('word') || type.includes('document')) return 'fa-file-word';
+      return 'fa-file-lines';
+    }
+
+    function mediaCount(entry) { return (entry.attachments || []).length; }
+    function checklistCount(entry) { return (entry.checklist || []).filter(Boolean).length; }
+
+    function getAllTags() {
+      return [...new Set(state.entries.flatMap(e => e.tags || []).map(t => t.trim()).filter(Boolean))].sort((a,b) => a.localeCompare(b,'it'));
+    }
+
+    function filteredEntries() {
+      return getSearchEntries();
+    }
+
+    function getSearchEntries() {
+      const search = document.getElementById('searchInput')?.value?.trim().toLowerCase() || '';
+      const cat = document.getElementById('categoryFilter')?.value || 'all';
+      const priority = document.getElementById('priorityFilter')?.value || 'all';
+      return state.entries
+        .filter(entry => {
+          const hay = [entry.title, entry.purpose, entry.notes, ...(entry.tags || []), entry.category, ...(entry.checklist || [])].join(' ').toLowerCase();
+          const matchSearch = !search || hay.includes(search);
+          const matchCat = cat === 'all' || entry.category === cat;
+          const matchPriority = priority === 'all' || entry.priority === priority;
+          const matchTag = ui.activeTag === 'all' || (entry.tags || []).includes(ui.activeTag);
+          return matchSearch && matchCat && matchPriority && matchTag;
+        })
+        .sort((a,b) => new Date(b.updatedAt) - new Date(a.updatedAt));
+    }
+
+    function getManualEntries() {
+      const keyword = document.getElementById('manualKeyword')?.value?.trim().toLowerCase() || '';
+      const cat = document.getElementById('manualCategory')?.value || 'all';
+      const sort = document.getElementById('manualSort')?.value || 'updated';
+      const priorityOrder = { alta: 0, media: 1, bassa: 2 };
+      const entries = state.entries.filter(entry => {
+        const hay = [entry.title, entry.purpose, entry.notes, ...(entry.tags || []), entry.category, ...(entry.checklist || [])].join(' ').toLowerCase();
+        const matchKeyword = !keyword || hay.includes(keyword);
+        const matchCat = cat === 'all' || entry.category === cat;
+        return matchKeyword && matchCat;
+      });
+      return entries.sort((a,b) => {
+        if (sort === 'created') return new Date(b.createdAt || 0) - new Date(a.createdAt || 0);
+        if (sort === 'az') return (a.title || '').localeCompare(b.title || '', 'it');
+        if (sort === 'za') return (b.title || '').localeCompare(a.title || '', 'it');
+        if (sort === 'priority') {
+          const diff = (priorityOrder[a.priority] ?? 9) - (priorityOrder[b.priority] ?? 9);
+          return diff || (a.title || '').localeCompare(b.title || '', 'it');
+        }
+        return new Date(b.updatedAt || 0) - new Date(a.updatedAt || 0);
+      });
+    }
+
+    function updateFilters() {
+      const categories = [...new Set(state.categories.filter(Boolean).concat(state.entries.map(e => e.category).filter(Boolean)))].sort((a,b)=>a.localeCompare(b,'it'));
+      state.categories = categories;
+      categories.forEach(cat => {
+        if (!state.categoryIcons[cat]) state.categoryIcons[cat] = defaultCategoryIcons[cat] || '📁';
+      });
+
+      const searchSelect = document.getElementById('categoryFilter');
+      if (searchSelect) {
+        const current = searchSelect.value || 'all';
+        searchSelect.innerHTML = '<option value="all">📂 Tutte le categorie</option>' + categories.map(c => `<option value="${escapeHtml(c)}">${categoryEmoji(c)} ${escapeHtml(c)}</option>`).join('');
+        searchSelect.value = categories.includes(current) ? current : 'all';
+      }
+
+      const manualSelect = document.getElementById('manualCategory');
+      if (manualSelect) {
+        const current = manualSelect.value || 'all';
+        manualSelect.innerHTML = '<option value="all">📂 Tutte le categorie</option>' + categories.map(c => `<option value="${escapeHtml(c)}">${categoryEmoji(c)} ${escapeHtml(c)}</option>`).join('');
+        manualSelect.value = categories.includes(current) ? current : 'all';
+      }
+
+      const categoryOptions = document.getElementById('categoryOptions');
+      if (categoryOptions) categoryOptions.innerHTML = categories.map(c => `<option value="${escapeHtml(c)}"></option>`).join('');
+
+      const tags = getAllTags();
+      const bar = document.getElementById('tagBar');
+      const chips = [`<button class="chip ${ui.activeTag==='all' ? 'active' : ''} px-3 py-2 rounded-2xl border border-slate-200 text-sm font-semibold whitespace-nowrap" onclick="setTag('all')">✨ Tutti</button>`]
+        .concat(tags.map(tag => `<button class="chip ${ui.activeTag===tag ? 'active' : ''} px-3 py-2 rounded-2xl border border-slate-200 text-sm font-semibold whitespace-nowrap" onclick='setTag(${JSON.stringify(tag)})'># ${escapeHtml(tag)}</button>`));
+      if (bar) bar.innerHTML = chips.join('');
+    }
+
+    function renderStats() {
+      document.getElementById('statEntries').textContent = state.entries.length;
+      document.getElementById('statMedia').textContent = state.entries.reduce((sum,e) => sum + mediaCount(e), 0);
+      document.getElementById('statChecklist').textContent = state.entries.reduce((sum,e) => sum + checklistCount(e), 0);
+      const latest = state.entries.slice().sort((a,b) => new Date(b.updatedAt) - new Date(a.updatedAt))[0];
+      document.getElementById('statUpdated').textContent = latest ? formatDate(latest.updatedAt) : '—';
+    }
+
+    function renderCards(entries) {
+      const wrap = document.getElementById('cardsView');
+      wrap.innerHTML = entries.map(entry => {
+        const meta = priorityMeta(entry.priority);
+        const mainMedia = (entry.attachments || [])[0];
+        let cover = `<div class="h-44 rounded-[22px] bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-400"><i class="fa-solid fa-photo-film text-3xl"></i></div>`;
+        if (mainMedia) {
+          if (mainMedia.type.startsWith('image/')) cover = `<img src="${mainMedia.data}" class="h-44 w-full object-cover rounded-[22px] border border-slate-200" alt="${escapeHtml(entry.title)}"/>`;
+          else if (mainMedia.type.startsWith('video/')) cover = `<video src="${mainMedia.data}" class="h-44 w-full object-cover rounded-[22px] border border-slate-200" controls></video>`;
+          else if (mainMedia.type.startsWith('audio/')) cover = `<div class="h-44 rounded-[22px] bg-slate-950 text-white border border-slate-800 p-4 flex flex-col justify-between"><div class="text-sm text-slate-300">🎧 Anteprima audio</div><audio controls src="${mainMedia.data}" class="w-full"></audio></div>`;
+        }
+        return `
+          <article class="bg-white rounded-[28px] border border-slate-200 shadow-sm p-4 flex flex-col gap-4">
+            ${cover}
+            <div class="flex items-start justify-between gap-3">
+              <div>
+                <div class="text-sm font-semibold text-slate-500">${categoryEmoji(entry.category)} ${escapeHtml(entry.category)}</div>
+                <h3 class="text-xl font-bold text-slate-900 mt-1">${escapeHtml(entry.title)}</h3>
+              </div>
+              <span class="px-3 py-1 rounded-full border text-xs font-bold ${meta.cls}">${meta.label}</span>
+            </div>
+            <p class="text-slate-600 line-clamp-3 min-h-[72px]">${escapeHtml(entry.purpose || 'Nessuna descrizione inserita.')}</p>
+            <div class="flex flex-wrap gap-2">${(entry.tags||[]).slice(0,5).map(t => `<span class="px-2.5 py-1 rounded-full bg-slate-100 text-slate-600 text-xs font-semibold"># ${escapeHtml(t)}</span>`).join('')}</div>
+            <div class="grid grid-cols-3 gap-2 text-sm">
+              <div class="rounded-2xl bg-slate-50 p-3 border border-slate-200"><div class="text-slate-400 text-xs">📎 Allegati</div><div class="font-bold text-slate-900 mt-1">${mediaCount(entry)}</div></div>
+              <div class="rounded-2xl bg-slate-50 p-3 border border-slate-200"><div class="text-slate-400 text-xs">✅ Checklist</div><div class="font-bold text-slate-900 mt-1">${checklistCount(entry)}</div></div>
+              <div class="rounded-2xl bg-slate-50 p-3 border border-slate-200"><div class="text-slate-400 text-xs">🕒 Update</div><div class="font-bold text-slate-900 mt-1 text-xs">${formatDate(entry.updatedAt).split(',')[0]}</div></div>
+            </div>
+            <div class="flex gap-2 mt-auto">
+              <button onclick="viewEntry('${entry.id}')" class="flex-1 px-4 py-3 rounded-2xl bg-slate-900 text-white font-semibold">Apri</button>
+              <button onclick="editEntry('${entry.id}')" class="px-4 py-3 rounded-2xl border border-slate-200 font-semibold text-slate-700">Modifica</button>
+            </div>
+          </article>`;
+      }).join('');
+    }
+
+    function renderManual(entries) {
+      const wrap = document.getElementById('manualView');
+      if (!entries.length) { wrap.innerHTML = ''; return; }
+      const grouped = entries.reduce((acc, entry) => {
+        (acc[entry.category] ||= []).push(entry);
+        return acc;
+      }, {});
+
+      wrap.innerHTML = Object.entries(grouped).map(([category, items]) => `
+        <section class="bg-white rounded-[28px] border border-slate-200 shadow-sm overflow-hidden">
+          <div class="px-5 py-4 border-b border-slate-200 bg-slate-50">
+            <h3 class="text-xl font-bold text-slate-900">${categoryEmoji(category)} ${escapeHtml(category)}</h3>
+            <p class="text-sm text-slate-500">${items.length} scheda${items.length>1?'e':''} nel fascicolo</p>
+          </div>
+          <div class="p-4 space-y-4">
+            ${items.map(entry => {
+              const meta = priorityMeta(entry.priority);
+              return `
+                <article class="rounded-[24px] border border-slate-200 p-4 bg-white">
+                  <div class="flex flex-col lg:flex-row gap-4 lg:items-start lg:justify-between">
+                    <div class="flex-1">
+                      <div class="flex items-center gap-2 flex-wrap">
+                        <h4 class="text-lg font-bold text-slate-900">${escapeHtml(entry.title)}</h4>
+                        <span class="px-3 py-1 rounded-full border text-xs font-bold ${meta.cls}">${meta.label}</span>
+                      </div>
+                      <div class="mt-2 text-slate-600 whitespace-pre-wrap">${escapeHtml(entry.purpose || 'Nessuna descrizione.')}</div>
+                      ${entry.notes ? `<div class="mt-3 rounded-2xl bg-slate-50 border border-slate-200 p-3 text-sm text-slate-600"><span class="font-bold text-slate-700">📎 Note:</span> ${escapeHtml(entry.notes)}</div>` : ''}
+                      ${(entry.checklist||[]).filter(Boolean).length ? `<div class="mt-3"><div class="font-bold text-slate-700 mb-2">✅ Checklist</div><div class="space-y-2">${entry.checklist.filter(Boolean).map(item => `<div class="flex gap-2 text-sm text-slate-600"><span>•</span><span>${escapeHtml(item)}</span></div>`).join('')}</div></div>` : ''}
+                      ${(entry.tags||[]).length ? `<div class="mt-3 flex flex-wrap gap-2">${entry.tags.map(t => `<span class="px-2.5 py-1 rounded-full bg-slate-100 text-slate-600 text-xs font-semibold"># ${escapeHtml(t)}</span>`).join('')}</div>` : ''}
+                      <div class="mt-3 text-xs text-slate-400">Ultima modifica: ${formatDate(entry.updatedAt)}</div>
+                      <div class="mt-4 flex gap-2">
+                        <button onclick="editEntry('${entry.id}')" class="px-4 py-3 rounded-2xl border border-slate-200 font-semibold text-slate-700 bg-white">Modifica</button>
+                      </div>
+                    </div>
+                    <div class="lg:w-[280px] space-y-2">
+                      ${(entry.attachments||[]).slice(0,3).map(file => {
+                        if (file.type.startsWith('image/')) return `<button type="button" onclick="openAttachmentPreview('${entry.id}','${file.id}')" class="media-openable block w-full text-left"><img src="${file.data}" class="w-full h-28 object-cover rounded-2xl border border-slate-200 hover:opacity-95 transition" alt="${escapeHtml(file.name || 'allegato')}"/></button>`;
+                        if (file.type.startsWith('video/')) return `<div class="rounded-2xl overflow-hidden border border-slate-200 bg-black"><video src="${file.data}" controls preload="metadata" class="w-full h-28 object-cover"></video></div>`;
+                        if (file.type.startsWith('audio/')) return `<div class="rounded-2xl bg-slate-950 text-white p-3"><div class="text-xs text-slate-300 mb-2">🎧 Audio allegato</div><audio controls src="${file.data}" class="w-full"></audio></div>`;
+                        return `<button type="button" onclick="openAttachmentFile('${entry.id}','${file.id}')" class="w-full rounded-2xl border border-slate-200 p-3 bg-slate-50 text-sm text-slate-600 flex items-center gap-2 hover:bg-slate-100 transition"><i class="fa-solid ${attachmentIcon(file.type)}"></i><span class="truncate">${escapeHtml(file.name)}</span><span class="ml-auto text-xs font-semibold text-blue-600">Apri</span></button>`;
+                      }).join('') || '<div class="rounded-2xl border border-dashed border-slate-300 p-6 text-center text-slate-400 text-sm">Nessun allegato</div>'}
+                    </div>
+                  </div>
+                </article>`;
+            }).join('')}
+          </div>
+        </section>`).join('');
+    }
+
+    function renderCategoryManager() {
+      const wrap = document.getElementById('categoryManagerList');
+      if (!wrap) return;
+      const categories = [...new Set((state.categories || []).filter(Boolean))].sort((a,b) => a.localeCompare(b, 'it'));
+      wrap.innerHTML = categories.map(cat => `
+        <div class="grid grid-cols-[84px_1fr_auto] gap-3 items-center rounded-2xl border border-slate-200 bg-slate-50 p-3">
+          <div>
+            <label class="block text-[11px] font-bold uppercase tracking-wide text-slate-400 mb-1">Icona</label>
+            <input data-original-name="${escapeHtml(cat)}" data-field="icon" value="${escapeHtml(categoryEmoji(cat))}" maxlength="3" class="w-full px-3 py-2 rounded-xl border border-slate-200 bg-white text-center text-xl focus:outline-none focus:ring-4 focus:ring-blue-100 focus:border-blue-400" />
+          </div>
+          <div>
+            <label class="block text-[11px] font-bold uppercase tracking-wide text-slate-400 mb-1">Nome categoria</label>
+            <input data-original-name="${escapeHtml(cat)}" data-field="name" value="${escapeHtml(cat)}" class="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white focus:outline-none focus:ring-4 focus:ring-blue-100 focus:border-blue-400" />
+          </div>
+          <button type="button" onclick="removeCategoryRow('${escapeHtml(cat)}')" class="px-3 py-2 rounded-xl border border-rose-200 bg-rose-50 text-rose-600 font-semibold">Rimuovi</button>
+        </div>
+      `).join('');
+    }
+
+    function openCategoryManager() {
+      renderCategoryManager();
+      document.getElementById('categoryModal').classList.remove('hidden');
+      document.getElementById('categoryModal').classList.add('flex');
+    }
+
+    function closeCategoryManager() {
+      document.getElementById('categoryModal').classList.add('hidden');
+      document.getElementById('categoryModal').classList.remove('flex');
+    }
+
+    function addCategoryRow() {
+      const wrap = document.getElementById('categoryManagerList');
+      if (!wrap) return;
+      const row = document.createElement('div');
+      row.className = 'grid grid-cols-[84px_1fr_auto] gap-3 items-center rounded-2xl border border-slate-200 bg-slate-50 p-3';
+      row.innerHTML = `
+        <div>
+          <label class="block text-[11px] font-bold uppercase tracking-wide text-slate-400 mb-1">Icona</label>
+          <input data-original-name="" data-field="icon" value="📁" maxlength="3" class="w-full px-3 py-2 rounded-xl border border-slate-200 bg-white text-center text-xl focus:outline-none focus:ring-4 focus:ring-blue-100 focus:border-blue-400" />
+        </div>
+        <div>
+          <label class="block text-[11px] font-bold uppercase tracking-wide text-slate-400 mb-1">Nome categoria</label>
+          <input data-original-name="" data-field="name" value="" placeholder="Nuova categoria" class="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white focus:outline-none focus:ring-4 focus:ring-blue-100 focus:border-blue-400" />
+        </div>
+        <button type="button" onclick="this.parentElement.remove()" class="px-3 py-2 rounded-xl border border-slate-200 text-slate-600 font-semibold">Annulla</button>
+      `;
+      wrap.appendChild(row);
+      row.querySelector('[data-field="name"]').focus();
+    }
+
+    function removeCategoryRow(categoryName) {
+      const used = state.entries.some(entry => entry.category === categoryName);
+      const message = used
+        ? `La categoria "${categoryName}" è usata da una o più schede. Eliminandola, quelle schede verranno spostate in "Senza categoria". Continuare?`
+        : `Eliminare la categoria "${categoryName}"?`;
+      if (!confirm(message)) return;
+      state.entries = state.entries.map(entry => entry.category === categoryName ? { ...entry, category: 'Senza categoria' } : entry);
+      state.categories = state.categories.filter(cat => cat !== categoryName);
+      delete state.categoryIcons[categoryName];
+      if (!state.categories.includes('Senza categoria')) state.categories.push('Senza categoria');
+      if (!state.categoryIcons['Senza categoria']) state.categoryIcons['Senza categoria'] = '📁';
+      persist();
+      renderCategoryManager();
+      render();
+    }
+
+    function saveCategoryManager() {
+      const rows = [...document.querySelectorAll('#categoryManagerList > div')];
+      const nextCategories = [];
+      const nextIcons = {};
+      const renameMap = new Map();
+
+      for (const row of rows) {
+        const nameInput = row.querySelector('[data-field="name"]');
+        const iconInput = row.querySelector('[data-field="icon"]');
+        const originalName = nameInput.dataset.originalName || '';
+        const name = (nameInput.value || '').trim();
+        const icon = (iconInput.value || '').trim() || '📁';
+        if (!name) continue;
+        if (nextCategories.includes(name)) {
+          showToast(`La categoria "${name}" è presente più volte.`, false);
+          nameInput.focus();
+          return;
+        }
+        nextCategories.push(name);
+        nextIcons[name] = icon;
+        if (originalName && originalName !== name) renameMap.set(originalName, name);
+      }
+
+      if (!nextCategories.length) {
+        showToast('Inserisci almeno una categoria.', false);
+        return;
+      }
+
+      state.entries = state.entries.map(entry => renameMap.has(entry.category)
+        ? { ...entry, category: renameMap.get(entry.category) }
+        : entry
+      );
+      state.categories = nextCategories;
+      state.categoryIcons = { ...defaultCategoryIcons, ...nextIcons };
+
+      const currentCategory = document.getElementById('entryCategory');
+      if (currentCategory && renameMap.has(currentCategory.value)) {
+        currentCategory.value = renameMap.get(currentCategory.value);
+      }
+
+      persist();
+      closeCategoryManager();
+      render();
+      showToast('Categorie aggiornate.');
+    }
+
+    function renderRecentEntries() {
+      const wrap = document.getElementById('recentEntries');
+      if (!wrap) return;
+      const recent = state.entries.slice().sort((a,b) => new Date(b.updatedAt) - new Date(a.updatedAt)).slice(0, 6);
+      if (!recent.length) {
+        wrap.innerHTML = '<div class="col-span-full rounded-[24px] border border-dashed border-slate-300 p-8 text-center text-slate-400"><div class="w-14 h-14 rounded-full bg-slate-100 mx-auto mb-3 flex items-center justify-center text-slate-400 text-xl"><i class="fa-solid fa-book-bookmark"></i></div><div class="font-bold text-slate-700 text-lg">Inizia il tuo fascicolo operativo</div><div class="mt-2 max-w-xl mx-auto">Crea una scheda per uno strumento, una procedura, una regola di sicurezza o una situazione ricorrente. Ogni scheda può includere testo, checklist, foto, video, audio e allegati.</div><button onclick="openEntryModal()" class="mt-5 inline-flex items-center px-5 py-3 rounded-2xl bg-slate-900 text-white font-semibold"><i class="fa-solid fa-plus mr-2"></i>Crea la prima scheda</button></div>';
+        return;
+      }
+      wrap.innerHTML = recent.map(entry => {
+        const meta = priorityMeta(entry.priority);
+        const mainMedia = (entry.attachments || [])[0];
+        let cover = `<div class="h-36 rounded-[22px] bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-400"><i class="fa-solid fa-photo-film text-3xl"></i></div>`;
+        if (mainMedia) {
+          if (mainMedia.type.startsWith('image/')) cover = `<img src="${mainMedia.data}" class="h-36 w-full object-cover rounded-[22px] border border-slate-200" alt="${escapeHtml(entry.title)}"/>`;
+          else if (mainMedia.type.startsWith('video/')) cover = `<video src="${mainMedia.data}" class="h-36 w-full object-cover rounded-[22px] border border-slate-200" controls></video>`;
+          else if (mainMedia.type.startsWith('audio/')) cover = `<div class="h-36 rounded-[22px] bg-slate-950 text-white border border-slate-800 p-4 flex flex-col justify-between"><div class="text-sm text-slate-300">🎧 Audio</div><audio controls src="${mainMedia.data}" class="w-full"></audio></div>`;
+        }
+        return `
+          <article class="bg-slate-50 rounded-[24px] border border-slate-200 p-4 flex flex-col gap-3">
+            ${cover}
+            <div class="flex items-start justify-between gap-2">
+              <div>
+                <div class="text-xs font-semibold text-slate-500">${categoryEmoji(entry.category)} ${escapeHtml(entry.category)}</div>
+                <h3 class="text-base font-bold text-slate-900 mt-1">${escapeHtml(entry.title)}</h3>
+              </div>
+              <span class="px-2.5 py-1 rounded-full border text-[11px] font-bold ${meta.cls}">${meta.label}</span>
+            </div>
+            <p class="text-sm text-slate-600 line-clamp-2">${escapeHtml(entry.purpose || 'Nessuna descrizione inserita.')}</p>
+            <div class="flex items-center justify-between text-xs text-slate-400">
+              <span>📎 ${mediaCount(entry)} allegati</span>
+              <span>${formatDate(entry.updatedAt).split(',')[0]}</span>
+            </div>
+            <div class="flex gap-2 mt-auto">
+              <button onclick="viewEntry('${entry.id}')" class="flex-1 px-4 py-3 rounded-2xl bg-slate-900 text-white font-semibold">Apri nel fascicolo</button>
+              <button onclick="editEntry('${entry.id}')" class="px-4 py-3 rounded-2xl border border-slate-200 font-semibold text-slate-700">Modifica</button>
+            </div>
+          </article>`;
+      }).join('');
+    }
+
+    function render() {
+      updateFilters();
+      renderStats();
+      renderRecentEntries();
+      const searchEntries = getSearchEntries();
+      const manualEntries = getManualEntries();
+      const empty = document.getElementById('emptyState');
+      const homeStats = document.getElementById('homeStats');
+      const searchTools = document.getElementById('searchTools');
+      const manualControls = document.getElementById('manualControls');
+      const homeFeed = document.getElementById('homeFeed');
+      const cardsView = document.getElementById('cardsView');
+      const manualView = document.getElementById('manualView');
+      const isEmpty = !state.entries.length;
+      const showingHome = ui.activeNav === 'home';
+      const showingSearch = ui.activeNav === 'search';
+      const showingManual = ui.activeNav === 'manual';
+
+      empty.classList.add('hidden');
+      homeStats.classList.toggle('hidden', !showingHome);
+      homeFeed.classList.toggle('hidden', !showingHome);
+      searchTools.classList.toggle('hidden', !showingSearch);
+      cardsView.classList.toggle('hidden', !showingSearch || isEmpty);
+      manualControls.classList.toggle('hidden', !showingManual || isEmpty);
+      manualView.classList.toggle('hidden', !showingManual || isEmpty);
+      empty.classList.toggle('hidden', !(isEmpty && (showingSearch || showingManual)));
+
+      if (!isEmpty) {
+        if (showingSearch) renderCards(searchEntries);
+        if (showingManual) renderManual(manualEntries);
+      } else {
+        cardsView.innerHTML = '';
+        manualView.innerHTML = '';
+      }
+
+      ['navHome','navSearch','navQuick','navManual','navSave'].forEach(id => document.getElementById(id)?.classList.remove('active'));
+      const activeMap = { home:'navHome', search:'navSearch', quick:'navQuick', manual:'navManual', save:'navSave' };
+      document.getElementById(activeMap[ui.activeNav || 'home'])?.classList.add('active');
+      persist();
+    }
+
+    function setView(view, el) {
+      ui.view = view;
+      ui.activeNav = view === 'manual' ? 'manual' : 'search';
+      render();
+    }
+
+    function setTag(tag) {
+      ui.activeTag = tag;
+      render();
+    }
+
+    function resetModal() {
+      editingId = null;
+      draftAttachments = [];
+      document.getElementById('modalTitle').textContent = 'Nuova scheda';
+      document.getElementById('entryTitle').value = '';
+      document.getElementById('entryCategory').value = 'Strumenti';
+      document.getElementById('entryPriority').value = 'media';
+      document.getElementById('entryTags').value = '';
+      document.getElementById('entryPurpose').value = '';
+      document.getElementById('entryNotes').value = '';
+      document.getElementById('checklistBuilder').innerHTML = '';
+      document.getElementById('attachmentPreview').innerHTML = '';
+      document.getElementById('entryFiles').value = '';
+      document.getElementById('deleteEntryBtn').classList.add('hidden');
+      addChecklistItem();
+    }
+
+    function openEntryModal() {
+      resetModal();
+      document.body.classList.add('modal-open');
+      document.getElementById('entryModal').classList.remove('hidden');
+    }
+
+    function closeEntryModal() {
+      document.body.classList.remove('modal-open');
+      document.getElementById('entryModal').classList.add('hidden');
+      if (ui.activeNav === 'quick') {
+        ui.activeNav = ui.lastNavBeforeSave || (ui.activeNav === 'save' ? 'home' : ui.activeNav) || 'home';
+        render();
+      }
+    }
+
+    function addChecklistItem(value='') {
+      const row = document.createElement('div');
+      row.className = 'flex gap-2';
+      row.innerHTML = `
+        <input value="${escapeHtml(value)}" class="check-item flex-1 px-4 py-3 rounded-2xl border border-slate-200 bg-white focus:outline-none focus:ring-4 focus:ring-blue-100 focus:border-blue-400" placeholder="Es. Indossare guanti e occhiali" />
+        <button onclick="this.parentElement.remove()" class="w-12 h-12 rounded-2xl border border-slate-200 text-slate-500 hover:bg-slate-100"><i class="fa-solid fa-trash"></i></button>`;
+      document.getElementById('checklistBuilder').appendChild(row);
+    }
+
+    function handleFiles(fileList) {
+      const files = [...fileList];
+      if (!files.length) return;
+      files.forEach(file => {
+        const reader = new FileReader();
+        reader.onload = e => {
+          draftAttachments.push({
+            id: crypto.randomUUID(),
+            name: file.name,
+            type: file.type || 'application/octet-stream',
+            size: file.size,
+            data: e.target.result
+          });
+          renderAttachmentPreview();
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+
+    function renderAttachmentPreview() {
+      const box = document.getElementById('attachmentPreview');
+      box.innerHTML = draftAttachments.map(file => {
+        let preview = `<div class="h-28 rounded-2xl bg-white border border-slate-200 flex items-center justify-center text-slate-400"><i class="fa-solid ${attachmentIcon(file.type)} text-2xl"></i></div>`;
+        if (file.type.startsWith('image/')) preview = `<img src="${file.data}" class="w-full h-28 object-cover rounded-2xl border border-slate-200" alt="${escapeHtml(file.name)}">`;
+        else if (file.type.startsWith('video/')) preview = `<video src="${file.data}" class="w-full h-28 object-cover rounded-2xl border border-slate-200" controls></video>`;
+        else if (file.type.startsWith('audio/')) preview = `<div class="rounded-2xl bg-slate-950 text-white p-3 border border-slate-800"><div class="text-xs text-slate-300 mb-2">🎧 Audio</div><audio controls src="${file.data}" class="w-full"></audio></div>`;
+        return `<div class="attachment-thumb space-y-2">${preview}<div class="flex items-start justify-between gap-2 text-xs"><div class="text-slate-500 truncate">${escapeHtml(file.name)}</div><button onclick="removeDraftAttachment('${file.id}')" class="text-rose-500 font-bold">Rimuovi</button></div></div>`;
+      }).join('');
+    }
+
+    function removeDraftAttachment(id) {
+      draftAttachments = draftAttachments.filter(a => a.id !== id);
+      renderAttachmentPreview();
+    }
+
+    function saveEntry() {
+      const title = document.getElementById('entryTitle').value.trim();
+      if (!title) { showToast('Inserisci un titolo.', false); return; }
+      const category = document.getElementById('entryCategory').value;
+      const priority = document.getElementById('entryPriority').value;
+      const tags = document.getElementById('entryTags').value.split(',').map(t => t.trim()).filter(Boolean);
+      const purpose = document.getElementById('entryPurpose').value.trim();
+      const notes = document.getElementById('entryNotes').value.trim();
+      const checklist = [...document.querySelectorAll('.check-item')].map(i => i.value.trim()).filter(Boolean);
+      const now = new Date().toISOString();
+
+      if (!state.categories.includes(category)) state.categories.push(category);
+
+      if (editingId) {
+        const idx = state.entries.findIndex(e => e.id === editingId);
+        state.entries[idx] = { ...state.entries[idx], title, category, priority, tags, purpose, notes, checklist, attachments: draftAttachments, updatedAt: now };
+        showToast('Scheda aggiornata.');
+      } else {
+        state.entries.unshift({
+          id: crypto.randomUUID(),
+          title, category, priority, tags, purpose, notes, checklist, attachments: draftAttachments,
+          createdAt: now, updatedAt: now
+        });
+        showToast('Scheda salvata.');
+      }
+
+      persist();
+      closeEntryModal();
+      render();
+    }
+
+    function editEntry(id) {
+      const entry = state.entries.find(e => e.id === id);
+      if (!entry) return;
+      editingId = id;
+      draftAttachments = structuredClone(entry.attachments || []);
+      document.getElementById('modalTitle').textContent = 'Modifica scheda';
+      document.getElementById('entryTitle').value = entry.title || '';
+      document.getElementById('entryCategory').value = entry.category || 'Strumenti';
+      document.getElementById('entryPriority').value = entry.priority || 'media';
+      document.getElementById('entryTags').value = (entry.tags || []).join(', ');
+      document.getElementById('entryPurpose').value = entry.purpose || '';
+      document.getElementById('entryNotes').value = entry.notes || '';
+      document.getElementById('checklistBuilder').innerHTML = '';
+      (entry.checklist || ['']).forEach(item => addChecklistItem(item));
+      document.getElementById('deleteEntryBtn').classList.remove('hidden');
+      renderAttachmentPreview();
+      document.body.classList.add('modal-open');
+      document.getElementById('entryModal').classList.remove('hidden');
+    }
+
+    function deleteEntry(id) {
+      const entry = state.entries.find(e => e.id === id);
+      if (!entry) return;
+      if (!confirm(`Eliminare la scheda "${entry.title}"?`)) return;
+      state.entries = state.entries.filter(e => e.id !== id);
+      persist();
+      render();
+      showToast('Scheda eliminata.');
+    }
+
+    function deleteCurrentEntry() {
+      if (!editingId) return;
+      const currentId = editingId;
+      closeEntryModal();
+      deleteEntry(currentId);
+    }
+
+    function viewEntry(id) {
+      ui.view = 'manual';
+      ui.activeNav = 'manual';
+      render();
+      setTimeout(() => {
+        const entry = state.entries.find(e => e.id === id);
+        if (!entry) return;
+        const headings = [...document.querySelectorAll('#manualView h4')];
+        const target = headings.find(h => h.textContent.trim() === entry.title.trim());
+        if (target) target.scrollIntoView({ behavior:'smooth', block:'center' });
+      }, 100);
+    }
+
+    function openQuickCapture() {
+      ui.activeNav = 'quick';
+      render();
+      openEntryModal();
+      document.getElementById('entryCategory').value = 'Procedure';
+      document.getElementById('entryPriority').value = 'alta';
+      document.getElementById('entryTitle').focus();
+      showToast('Modalità rapida attiva.');
+    }
+
+    function downloadBackup() {
+      const blob = new Blob([JSON.stringify(state, null, 2)], { type:'application/json' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'MyWorkBook_Backup.json';
+      a.click();
+      URL.revokeObjectURL(a.href);
+      showToast('Backup scaricato.');
+    }
+
+    function importBackup(input) {
+      const file = input.files?.[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = e => {
+        try {
+          const parsed = JSON.parse(e.target.result);
+          if (!parsed.entries || !Array.isArray(parsed.entries)) throw new Error('Formato non valido');
+          state = parsed;
+          persist();
+          render();
+          closeSaveModal();
+          showToast('Backup importato.');
+        } catch {
+          showToast('File non valido.', false);
+        }
+      };
+      reader.readAsText(file);
+      input.value = '';
+    }
+
+    function buildManualHtml(entries = filteredEntries(), forExport = false) {
+      const grouped = entries.reduce((acc, e) => ((acc[e.category] ||= []).push(e), acc), {});
+      const totalAttachments = entries.reduce((sum, e) => sum + mediaCount(e), 0);
+      const totalChecklist = entries.reduce((sum, e) => sum + checklistCount(e), 0);
+      return `
+        <div class="pdf-shell ${forExport ? 'pdf-mode' : ''}">
+          <section class="bg-white rounded-[28px] border border-slate-200 shadow-sm overflow-hidden mb-4">
+            <div class="px-6 py-8 bg-slate-950 text-white">
+              <div class="text-xs uppercase tracking-[0.28em] text-slate-400 font-bold">Manuale operativo personale</div>
+              <h1 class="text-3xl font-bold mt-2">📘 MyWorkBook</h1>
+              <p class="text-slate-300 mt-2 max-w-2xl">Fascicolo organizzato per categorie, pronto per consultazione e stampa.</p>
+              <div class="mt-4 grid grid-cols-3 gap-3 text-sm">
+                <div class="rounded-2xl bg-white/10 p-3 border border-white/10"><div class="text-slate-300">Schede</div><div class="text-2xl font-bold">${entries.length}</div></div>
+                <div class="rounded-2xl bg-white/10 p-3 border border-white/10"><div class="text-slate-300">Allegati</div><div class="text-2xl font-bold">${totalAttachments}</div></div>
+                <div class="rounded-2xl bg-white/10 p-3 border border-white/10"><div class="text-slate-300">Checklist</div><div class="text-2xl font-bold">${totalChecklist}</div></div>
+              </div>
+            </div>
+            <div class="px-6 py-5 bg-slate-50 border-t border-slate-200">
+              <div class="text-sm font-bold text-slate-700">Indice automatico</div>
+              <div class="mt-3 space-y-2">${Object.entries(grouped).map(([category, items], idx) => `<div class="flex items-center justify-between rounded-2xl bg-white border border-slate-200 px-4 py-3 text-sm"><div class="font-semibold text-slate-700">${idx+1}. ${categoryEmoji(category)} ${escapeHtml(category)}</div><div class="text-slate-400">${items.length} scheda${items.length>1?'e':''}</div></div>`).join('')}</div>
+            </div>
+          </section>
+          ${Object.entries(grouped).map(([category, items]) => `
+            <section class="bg-white rounded-[28px] border border-slate-200 shadow-sm overflow-hidden mb-4 pdf-section">
+              <div class="px-5 py-4 border-b border-slate-200 bg-slate-50">
+                <h3 class="text-xl font-bold text-slate-900">${categoryEmoji(category)} ${escapeHtml(category)}</h3>
+                <p class="text-sm text-slate-500">${items.length} scheda${items.length>1?'e':''} nel fascicolo</p>
+              </div>
+              <div class="p-4 space-y-4">
+                ${items.map(entry => {
+                  const meta = priorityMeta(entry.priority);
+                  return `
+                    <article class="rounded-[24px] border border-slate-200 p-4 bg-white pdf-card">
+                      <div class="flex flex-col lg:flex-row gap-4 lg:items-start lg:justify-between">
+                        <div class="flex-1">
+                          <div class="flex items-center gap-2 flex-wrap">
+                            <h4 class="text-lg font-bold text-slate-900">${escapeHtml(entry.title)}</h4>
+                            <span class="px-3 py-1 rounded-full border text-xs font-bold ${meta.cls}">${meta.label}</span>
+                          </div>
+                          <div class="mt-2 text-slate-600 whitespace-pre-wrap">${escapeHtml(entry.purpose || 'Nessuna descrizione.')}</div>
+                          ${entry.notes ? `<div class="mt-3 rounded-2xl bg-slate-50 border border-slate-200 p-3 text-sm text-slate-600"><span class="font-bold text-slate-700">📝 Note:</span> ${escapeHtml(entry.notes)}</div>` : ''}
+                          ${(entry.checklist||[]).filter(Boolean).length ? `<div class="mt-3"><div class="font-bold text-slate-700 mb-2">✅ Checklist</div><div class="space-y-2">${entry.checklist.filter(Boolean).map(item => `<div class="flex gap-2 text-sm text-slate-600"><span>•</span><span>${escapeHtml(item)}</span></div>`).join('')}</div></div>` : ''}
+                          ${(entry.tags||[]).length ? `<div class="mt-3 flex flex-wrap gap-2">${entry.tags.map(t => `<span class="px-2.5 py-1 rounded-full bg-slate-100 text-slate-600 text-xs font-semibold"># ${escapeHtml(t)}</span>`).join('')}</div>` : ''}
+                          <div class="mt-3 text-xs text-slate-400">Ultima modifica: ${formatDate(entry.updatedAt)}</div>
+                        </div>
+                        <div class="lg:w-[280px] space-y-2">
+                          ${(entry.attachments||[]).slice(0,4).map(file => {
+                            if (file.type.startsWith('image/')) return `<img src="${file.data}" class="w-full h-32 object-cover rounded-2xl border border-slate-200" alt="allegato" crossorigin="anonymous"/>`;
+                            if (file.type.startsWith('video/')) return `<div class="rounded-2xl bg-slate-100 border border-slate-200 p-3 text-sm text-slate-500"><div class="font-semibold text-slate-700 mb-1">🎬 Video allegato</div><div>${escapeHtml(file.name)}</div></div>`;
+                            if (file.type.startsWith('audio/')) return `<div class="rounded-2xl bg-slate-950 text-white p-3"><div class="text-xs text-slate-300 mb-2">🎧 Audio allegato</div><div class="text-sm text-slate-200">${escapeHtml(file.name)}</div></div>`;
+                            return `<div class="rounded-2xl border border-slate-200 p-3 bg-slate-50 text-sm text-slate-600 flex items-center gap-2"><i class="fa-solid ${attachmentIcon(file.type)}"></i><span class="truncate">${escapeHtml(file.name)}</span></div>`;
+                          }).join('') || '<div class="rounded-2xl border border-dashed border-slate-300 p-6 text-center text-slate-400 text-sm">Nessun allegato</div>'}
+                        </div>
+                      </div>
+                    </article>`;
+                }).join('')}
+              </div>
+            </section>`).join('')}
+          <div class="text-center py-4 text-[11px] uppercase tracking-[0.25em] text-slate-300 font-bold">© Mimi Studio</div>
+        </div>`;
+    }
+
+    function openManualView() {
+      ui.view = 'manual';
+      ui.activeNav = 'manual';
+      render();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function goHome() {
+      ui.activeNav = 'home';
+      render();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function focusSearch() {
+      ui.view = 'cards';
+      ui.activeNav = 'search';
+      render();
+      setTimeout(() => {
+        const input = document.getElementById('searchInput');
+        if (input) { input.focus(); input.scrollIntoView({ behavior:'smooth', block:'center' }); }
+      }, 120);
+    }
+
+    function openSaveModal() {
+      ui.lastNavBeforeSave = ui.activeNav || 'home';
+      ui.activeNav = 'save';
+      render();
+      document.getElementById('saveModal').classList.remove('hidden');
+      document.getElementById('saveModal').classList.add('flex');
+    }
+
+    function closeSaveModal() {
+      document.getElementById('saveModal').classList.add('hidden');
+      document.getElementById('saveModal').classList.remove('flex');
+      ui.activeNav = ui.view === 'manual' ? 'manual' : 'home';
+      render();
+    }
+
+
+    function getPdfExportEntries() {
+      return ui.view === 'manual'
+        ? getManualEntries()
+        : state.entries.slice().sort((a,b) => new Date(b.updatedAt||0)-new Date(a.updatedAt||0));
+    }
+
+    function getPdfContextLabel(entries) {
+      if (ui.view === 'manual') {
+        const keyword = document.getElementById('manualKeyword')?.value?.trim() || '';
+        const cat = document.getElementById('manualCategory')?.value || 'all';
+        const sort = document.getElementById('manualSort')?.value || 'updated';
+        const sortLabel = {
+          updated: 'Ultima modifica',
+          created: 'Più recenti',
+          az: 'Alfabetico A-Z',
+          za: 'Alfabetico Z-A',
+          priority: 'Priorità'
+        }[sort] || 'Ultima modifica';
+        const parts = [];
+        if (cat !== 'all') parts.push(`Categoria: ${cat}`);
+        if (keyword) parts.push(`Parola chiave: ${keyword}`);
+        parts.push(`Ordinamento: ${sortLabel}`);
+        return parts.join(' · ');
+      }
+      return 'Esportazione completa delle schede salvate';
+    }
+
+    function groupEntriesForPdf(entries) {
+      const groups = [];
+      const map = new Map();
+      entries.forEach(entry => {
+        const key = entry.category || 'Senza categoria';
+        if (!map.has(key)) {
+          const group = { category: key, items: [] };
+          map.set(key, group);
+          groups.push(group);
+        }
+        map.get(key).items.push(entry);
+      });
+      return groups;
+    }
+
+    function fileExtension(name='') {
+      const parts = String(name).split('.');
+      return parts.length > 1 ? parts.pop().toUpperCase() : '';
+    }
+
+    function detectImageFormat(data='') {
+      if (data.includes('image/png')) return 'PNG';
+      if (data.includes('image/webp')) return 'WEBP';
+      return 'JPEG';
+    }
+
+    function addPdfPageFrame(pdf, pageNumber) {
+      const pageW = pdf.internal.pageSize.getWidth();
+      const pageH = pdf.internal.pageSize.getHeight();
+      pdf.setDrawColor(226, 232, 240);
+      pdf.roundedRect(10, 10, pageW - 20, pageH - 20, 5, 5);
+      pdf.setFont('helvetica', 'bold');
+      pdf.setFontSize(10);
+      pdf.setTextColor(15, 23, 42);
+      pdf.text('MyWorkBook', 16, 17);
+      pdf.setFont('helvetica', 'normal');
+      pdf.setFontSize(9);
+      pdf.setTextColor(100, 116, 139);
+      pdf.text('© Mimi Studio', 16, pageH - 12);
+      pdf.text(`Pag. ${pageNumber}`, pageW - 16, pageH - 12, { align: 'right' });
+    }
+
+    function addPdfChip(pdf, text, x, y, bg, fg) {
+      const width = Math.min(75, pdf.getTextWidth(text) + 10);
+      pdf.setFillColor(...bg);
+      pdf.roundedRect(x, y - 4.5, width, 7.5, 3.5, 3.5, 'F');
+      pdf.setFont('helvetica', 'bold');
+      pdf.setFontSize(9);
+      pdf.setTextColor(...fg);
+      pdf.text(text, x + 5, y);
+      return width;
+    }
+
+    function addPdfWrappedText(pdf, text, x, y, maxWidth, opts = {}) {
+      const {
+        size = 11,
+        color = [71, 85, 105],
+        lineHeight = 5,
+        style = 'normal'
+      } = opts;
+      pdf.setFont('helvetica', style);
+      pdf.setFontSize(size);
+      pdf.setTextColor(...color);
+      const lines = pdf.splitTextToSize(text || '', maxWidth);
+      pdf.text(lines, x, y);
+      return y + (lines.length * lineHeight);
+    }
+
+    async function exportPdfManual() {
+      const entries = getPdfExportEntries();
+      if (!entries.length) { showToast('Nessuna scheda da esportare.', false); return; }
+      closeSaveModal();
+      showToast('Preparazione PDF in corso...');
+
+      const { jsPDF } = window.jspdf;
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      const pageW = pdf.internal.pageSize.getWidth();
+      const pageH = pdf.internal.pageSize.getHeight();
+      const margin = 16;
+      const contentW = pageW - margin * 2;
+      let pageNumber = 1;
+
+      const groups = groupEntriesForPdf(entries);
+      const totalAttachments = entries.reduce((sum, e) => sum + mediaCount(e), 0);
+      const totalChecklist = entries.reduce((sum, e) => sum + checklistCount(e), 0);
+      const exportDate = new Date().toLocaleString('it-IT', { day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit' });
+      const contextLabel = getPdfContextLabel(entries);
+
+      // Cover
+      addPdfPageFrame(pdf, pageNumber);
+      pdf.setFillColor(15, 23, 42);
+      pdf.roundedRect(margin, 28, contentW, 44, 8, 8, 'F');
+      pdf.setFont('helvetica', 'bold');
+      pdf.setFontSize(13);
+      pdf.setTextColor(148, 163, 184);
+      pdf.text('Manuale operativo personale', margin + 8, 40);
+      pdf.setFontSize(26);
+      pdf.setTextColor(255, 255, 255);
+      pdf.text('MyWorkBook', margin + 8, 54);
+      pdf.setFont('helvetica', 'normal');
+      pdf.setFontSize(12);
+      pdf.setTextColor(226, 232, 240);
+      pdf.text('Fascicolo esportato dai contenuti salvati nell’app', margin + 8, 64);
+
+      let y = 90;
+      const cardW = (contentW - 8) / 2;
+      [
+        ['Schede', String(entries.length)],
+        ['Categorie', String(groups.length)],
+        ['Allegati', String(totalAttachments)],
+        ['Checklist', String(totalChecklist)]
+      ].forEach((item, idx) => {
+        const x = margin + (idx % 2) * (cardW + 8);
+        const yy = y + Math.floor(idx / 2) * 24;
+        pdf.setFillColor(248, 250, 252);
+        pdf.setDrawColor(226, 232, 240);
+        pdf.roundedRect(x, yy, cardW, 18, 5, 5, 'FD');
+        pdf.setFont('helvetica', 'normal');
+        pdf.setFontSize(10);
+        pdf.setTextColor(100, 116, 139);
+        pdf.text(item[0], x + 5, yy + 7);
+        pdf.setFont('helvetica', 'bold');
+        pdf.setFontSize(16);
+        pdf.setTextColor(15, 23, 42);
+        pdf.text(item[1], x + 5, yy + 14);
+      });
+      y += 58;
+
+      pdf.setFillColor(255, 255, 255);
+      pdf.setDrawColor(226, 232, 240);
+      pdf.roundedRect(margin, y, contentW, 40, 6, 6, 'FD');
+      pdf.setFont('helvetica', 'bold');
+      pdf.setFontSize(11);
+      pdf.setTextColor(15, 23, 42);
+      pdf.text('Dettagli esportazione', margin + 6, y + 8);
+      y = addPdfWrappedText(pdf, `Data esportazione: ${exportDate}`, margin + 6, y + 16, contentW - 12, { size: 10, color: [71,85,105] });
+      y = addPdfWrappedText(pdf, contextLabel, margin + 6, y + 1, contentW - 12, { size: 10, color: [71,85,105] });
+      y = addPdfWrappedText(pdf, 'Il fascicolo mantiene l’ordinamento attivo e riporta i contenuti tecnici principali delle schede, incluse immagini e riferimenti agli allegati multimediali.', margin + 6, y + 3, contentW - 12, { size: 10, color: [71,85,105] });
+
+      // Index page
+      pdf.addPage();
+      pageNumber += 1;
+      addPdfPageFrame(pdf, pageNumber);
+      pdf.setFont('helvetica', 'bold');
+      pdf.setFontSize(22);
+      pdf.setTextColor(15, 23, 42);
+      pdf.text('Indice del fascicolo', margin, 28);
+      pdf.setFont('helvetica', 'normal');
+      pdf.setFontSize(11);
+      pdf.setTextColor(100, 116, 139);
+      pdf.text('Categorie incluse nell’esportazione corrente', margin, 36);
+
+      let indexY = 48;
+      groups.forEach((group, idx) => {
+        if (indexY > pageH - 28) {
+          pdf.addPage();
+          pageNumber += 1;
+          addPdfPageFrame(pdf, pageNumber);
+          indexY = 24;
+        }
+        pdf.setFillColor(248, 250, 252);
+        pdf.setDrawColor(226, 232, 240);
+        pdf.roundedRect(margin, indexY, contentW, 14, 4, 4, 'FD');
+        pdf.setFont('helvetica', 'bold');
+        pdf.setFontSize(11);
+        pdf.setTextColor(15, 23, 42);
+        pdf.text(`${idx + 1}. ${group.category}`, margin + 5, indexY + 8.5);
+        pdf.setFont('helvetica', 'normal');
+        pdf.setTextColor(100, 116, 139);
+        pdf.text(`${group.items.length} scheda${group.items.length > 1 ? 'e' : ''}`, pageW - margin - 5, indexY + 8.5, { align: 'right' });
+        indexY += 18;
+      });
+
+      // Entries
+      for (const group of groups) {
+        pdf.addPage();
+        pageNumber += 1;
+        addPdfPageFrame(pdf, pageNumber);
+        pdf.setFillColor(239, 246, 255);
+        pdf.setDrawColor(191, 219, 254);
+        pdf.roundedRect(margin, 22, contentW, 18, 5, 5, 'FD');
+        pdf.setFont('helvetica', 'bold');
+        pdf.setFontSize(18);
+        pdf.setTextColor(30, 41, 59);
+        pdf.text(group.category, margin + 6, 33);
+        pdf.setFont('helvetica', 'normal');
+        pdf.setFontSize(10);
+        pdf.setTextColor(59, 130, 246);
+        pdf.text(`${group.items.length} scheda${group.items.length > 1 ? 'e' : ''}`, pageW - margin - 6, 33, { align: 'right' });
+
+        for (const entry of group.items) {
+          pdf.addPage();
+          pageNumber += 1;
+          addPdfPageFrame(pdf, pageNumber);
+          let cy = 24;
+
+          pdf.setFont('helvetica', 'bold');
+          pdf.setFontSize(22);
+          pdf.setTextColor(15, 23, 42);
+          const titleLines = pdf.splitTextToSize(entry.title || 'Scheda senza titolo', contentW);
+          pdf.text(titleLines, margin, cy);
+          cy += titleLines.length * 8;
+
+          let chipX = margin;
+          chipX += addPdfChip(pdf, `Categoria: ${entry.category || '—'}`, chipX, cy, [239, 246, 255], [29, 78, 216]) + 3;
+          const pLabel = entry.priority === 'alta' ? 'Priorità alta' : entry.priority === 'bassa' ? 'Priorità bassa' : 'Priorità media';
+          const pBg = entry.priority === 'alta' ? [254, 242, 242] : entry.priority === 'bassa' ? [236, 253, 245] : [255, 247, 237];
+          const pFg = entry.priority === 'alta' ? [190, 24, 93] : entry.priority === 'bassa' ? [5, 150, 105] : [194, 65, 12];
+          chipX += addPdfChip(pdf, pLabel, chipX, cy, pBg, pFg) + 3;
+          addPdfChip(pdf, `Aggiornata: ${formatDate(entry.updatedAt).split(',')[0]}`, chipX, cy, [248, 250, 252], [71, 85, 105]);
+          cy += 12;
+
+          if ((entry.tags || []).length) {
+            const tagsText = 'Tag: ' + entry.tags.map(t => `#${t}`).join('   ');
+            cy = addPdfWrappedText(pdf, tagsText, margin, cy, contentW, { size: 10, color: [71,85,105], style: 'bold' });
+            cy += 2;
+          }
+
+          pdf.setFillColor(255, 255, 255);
+          pdf.setDrawColor(226, 232, 240);
+          pdf.roundedRect(margin, cy, contentW, 32, 5, 5, 'FD');
+          pdf.setFont('helvetica', 'bold');
+          pdf.setFontSize(11);
+          pdf.setTextColor(15, 23, 42);
+          pdf.text('Descrizione / uso', margin + 5, cy + 8);
+          let boxY = addPdfWrappedText(pdf, entry.purpose || 'Nessuna descrizione inserita.', margin + 5, cy + 15, contentW - 10, { size: 10.5, color: [71,85,105] });
+          const descHeight = Math.max(32, boxY - cy + 5);
+          // redraw dynamic height box if needed
+          if (descHeight > 32) {
+            pdf.setFillColor(255, 255, 255);
+            pdf.setDrawColor(226, 232, 240);
+            pdf.roundedRect(margin, cy, contentW, descHeight, 5, 5, 'FD');
+            pdf.setFont('helvetica', 'bold');
+            pdf.setFontSize(11);
+            pdf.setTextColor(15, 23, 42);
+            pdf.text('Descrizione / uso', margin + 5, cy + 8);
+            boxY = addPdfWrappedText(pdf, entry.purpose || 'Nessuna descrizione inserita.', margin + 5, cy + 15, contentW - 10, { size: 10.5, color: [71,85,105] });
+          }
+          cy += Math.max(32, boxY - cy + 5) + 5;
+
+          if (entry.notes) {
+            pdf.setFillColor(248, 250, 252);
+            pdf.setDrawColor(226, 232, 240);
+            pdf.roundedRect(margin, cy, contentW, 24, 5, 5, 'FD');
+            pdf.setFont('helvetica', 'bold');
+            pdf.setFontSize(11);
+            pdf.setTextColor(15, 23, 42);
+            pdf.text('Note operative', margin + 5, cy + 8);
+            let notesY = addPdfWrappedText(pdf, entry.notes, margin + 5, cy + 15, contentW - 10, { size: 10, color: [71,85,105] });
+            const notesHeight = Math.max(24, notesY - cy + 5);
+            if (notesHeight > 24) {
+              pdf.setFillColor(248, 250, 252);
+              pdf.setDrawColor(226, 232, 240);
+              pdf.roundedRect(margin, cy, contentW, notesHeight, 5, 5, 'FD');
+              pdf.setFont('helvetica', 'bold');
+              pdf.setFontSize(11);
+              pdf.setTextColor(15, 23, 42);
+              pdf.text('Note operative', margin + 5, cy + 8);
+              notesY = addPdfWrappedText(pdf, entry.notes, margin + 5, cy + 15, contentW - 10, { size: 10, color: [71,85,105] });
+            }
+            cy += Math.max(24, notesY - cy + 5) + 5;
+          }
+
+          const checklist = (entry.checklist || []).filter(Boolean);
+          if (checklist.length) {
+            const baseHeight = 12 + checklist.length * 6;
+            pdf.setFillColor(255, 255, 255);
+            pdf.setDrawColor(226, 232, 240);
+            pdf.roundedRect(margin, cy, contentW, baseHeight, 5, 5, 'FD');
+            pdf.setFont('helvetica', 'bold');
+            pdf.setFontSize(11);
+            pdf.setTextColor(15, 23, 42);
+            pdf.text('Checklist operativa', margin + 5, cy + 8);
+            let itemY = cy + 15;
+            checklist.forEach(item => {
+              pdf.setFillColor(239, 246, 255);
+              pdf.setDrawColor(147, 197, 253);
+              pdf.circle(margin + 7, itemY - 1.2, 1.3, 'FD');
+              itemY = addPdfWrappedText(pdf, item, margin + 11, itemY, contentW - 16, { size: 10, color: [71,85,105] }) + 1;
+            });
+            cy = itemY + 2;
+          }
+
+          const attachments = entry.attachments || [];
+          if (attachments.length) {
+            if (cy > pageH - 90) {
+              pdf.addPage();
+              pageNumber += 1;
+              addPdfPageFrame(pdf, pageNumber);
+              cy = 24;
+            }
+            pdf.setFont('helvetica', 'bold');
+            pdf.setFontSize(12);
+            pdf.setTextColor(15, 23, 42);
+            pdf.text('Allegati', margin, cy);
+            cy += 6;
+
+            for (const file of attachments) {
+              const isImage = (file.type || '').startsWith('image/');
+              if (isImage) {
+                const imgW = contentW;
+                const imgH = 55;
+                if (cy + imgH + 12 > pageH - 18) {
+                  pdf.addPage();
+                  pageNumber += 1;
+                  addPdfPageFrame(pdf, pageNumber);
+                  cy = 24;
+                }
+                try {
+                  pdf.addImage(file.data, detectImageFormat(file.data), margin, cy, imgW, imgH, undefined, 'FAST');
+                  pdf.setDrawColor(226, 232, 240);
+                  pdf.roundedRect(margin, cy, imgW, imgH, 4, 4);
+                } catch (e) {
+                  pdf.setFillColor(248, 250, 252);
+                  pdf.setDrawColor(226, 232, 240);
+                  pdf.roundedRect(margin, cy, contentW, 20, 4, 4, 'FD');
+                  pdf.setFont('helvetica', 'normal');
+                  pdf.setFontSize(10);
+                  pdf.setTextColor(71, 85, 105);
+                  pdf.text(`Immagine allegata: ${file.name || 'Senza nome'}`, margin + 5, cy + 12);
+                  cy += 24;
+                  continue;
+                }
+                pdf.setFont('helvetica', 'normal');
+                pdf.setFontSize(9);
+                pdf.setTextColor(100, 116, 139);
+                const caption = `Immagine · ${file.name || 'Senza nome'}`;
+                pdf.text(caption, margin, cy + imgH + 5);
+                cy += imgH + 11;
+              } else {
+                const boxH = 16;
+                if (cy + boxH > pageH - 18) {
+                  pdf.addPage();
+                  pageNumber += 1;
+                  addPdfPageFrame(pdf, pageNumber);
+                  cy = 24;
+                }
+                pdf.setFillColor(248, 250, 252);
+                pdf.setDrawColor(226, 232, 240);
+                pdf.roundedRect(margin, cy, contentW, boxH, 4, 4, 'FD');
+                pdf.setFont('helvetica', 'bold');
+                pdf.setFontSize(10);
+                pdf.setTextColor(15, 23, 42);
+                const kind = (file.type || '').startsWith('video/') ? 'Video allegato' : (file.type || '').startsWith('audio/') ? 'Audio allegato' : 'File allegato';
+                pdf.text(kind, margin + 5, cy + 6.5);
+                pdf.setFont('helvetica', 'normal');
+                pdf.setFontSize(9);
+                pdf.setTextColor(71, 85, 105);
+                const details = [file.name || 'Senza nome', fileExtension(file.name)].filter(Boolean).join(' · ');
+                pdf.text(details, margin + 5, cy + 12);
+                cy += boxH + 4;
+              }
+            }
+          }
+        }
+      }
+
+      pdf.save('MyWorkBook_Fascicolo.pdf');
+      showToast('PDF esportato.');
+    }
+
+    function printManual() { exportPdfManual(); }
+
+    function findAttachment(entryId, attachmentId) {
+      const entry = state.entries.find(item => item.id === entryId);
+      if (!entry) return null;
+      return (entry.attachments || []).find(file => file.id === attachmentId) || null;
+    }
+
+    function openAttachmentPreview(entryId, attachmentId) {
+      const file = findAttachment(entryId, attachmentId);
+      if (!file) {
+        showToast('Allegato non trovato.', false);
+        return;
+      }
+      const modal = document.getElementById('mediaLightbox');
+      const image = document.getElementById('mediaLightboxImage');
+      if (!modal || !image) return;
+      image.src = file.data;
+      image.alt = file.name || 'Anteprima allegato';
+      image.classList.remove('hidden');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+      document.body.classList.add('modal-open');
+    }
+
+    function openAttachmentFile(entryId, attachmentId) {
+      const file = findAttachment(entryId, attachmentId);
+      if (!file) {
+        showToast('Allegato non trovato.', false);
+        return;
+      }
+      const link = document.createElement('a');
+      link.href = file.data;
+      link.target = '_blank';
+      link.rel = 'noopener noreferrer';
+      if (file.name) link.download = file.name;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    }
+
+    function closeMediaLightbox() {
+      const modal = document.getElementById('mediaLightbox');
+      const image = document.getElementById('mediaLightboxImage');
+      if (!modal || !image) return;
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+      image.src = '';
+      image.classList.add('hidden');
+      document.body.classList.remove('modal-open');
+    }
+
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') closeMediaLightbox();
+    });
+
+    render();
+  </script>
+</body>
+</html>
