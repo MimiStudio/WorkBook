@@ -1,0 +1,24 @@
+{
+  "name": "MyWorkBook",
+  "short_name": "MyWorkBook",
+  "id": "/WorkBook/",
+  "start_url": "/WorkBook/",
+  "scope": "/WorkBook/",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#0f172a",
+  "icons": [
+    {
+      "src": "/WorkBook/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/WorkBook/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
